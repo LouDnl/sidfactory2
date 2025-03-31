@@ -30,6 +30,7 @@
 #include "runtime/emulation/cpumemory.h"
 #include "runtime/emulation/cpumos6510.h"
 #include "runtime/emulation/asid/asid.h"
+#include "runtime/emulation/usbsid/usbsid.h"
 #include "runtime/emulation/sid/sidproxy.h"
 #include "runtime/environmentdefines.h"
 #include "runtime/execution/executionhandler.h"
@@ -126,11 +127,12 @@ namespace Editor
 
 		m_RtMidiOut = new RtMidiOut();
 		m_ASID = new ASid(m_RtMidiOut);
+		m_USBSID = new USBSID();
 		m_SIDProxy = new SIDProxy(sid_configuration);
 		m_CPUMemory = new CPUMemory(0x10000, &platform);
 		m_CPU = new CPUmos6510();
 		m_FlightRecorder = new FlightRecorder(&platform, 0x800);
-		m_ExecutionHandler = new ExecutionHandler(m_CPU, m_CPUMemory, m_SIDProxy, m_ASID, m_FlightRecorder);
+		m_ExecutionHandler = new ExecutionHandler(m_CPU, m_CPUMemory, m_SIDProxy, m_ASID, m_USBSID, m_FlightRecorder);
 
 		// Create audio stream
 		const int audio_buffer_size = GetSingleConfigurationValue<ConfigValueInt>(config, "Sound.Buffer.Size", 256);
@@ -230,6 +232,7 @@ namespace Editor
 		delete m_ExecutionHandler;
 		delete m_FlightRecorder;
 		delete m_ASID;
+		delete m_USBSID;
 		delete m_SIDProxy;
 		delete m_CPU;
 		delete m_CPUMemory;

@@ -26,6 +26,7 @@ namespace Foundation
 namespace Emulation
 {
 	class ASid;
+	class USBSID;
 	class CPUmos6510;
 	class CPUMemory;
 	class SIDProxy;
@@ -125,6 +126,7 @@ namespace Editor
 		Emulation::CPUMemory* m_CPUMemory;
 		Emulation::SIDProxy* m_SIDProxy;
 		Emulation::ASid *m_ASID;
+		Emulation::USBSID *m_USBSID;
 		Emulation::ExecutionHandler* m_ExecutionHandler;
 		Emulation::FlightRecorder* m_FlightRecorder;
 
