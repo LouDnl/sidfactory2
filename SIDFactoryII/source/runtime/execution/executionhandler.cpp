@@ -12,6 +12,7 @@
 #include "foundation/platform/imutex.h"
 #include "foundation/platform/iplatform.h"
 #include "runtime/emulation/asid/asid.h"
+#include "runtime/emulation/usbsid/usbsid.h"
 
 #include "utils/configfile.h"
 #include "utils/logging.h"
@@ -37,11 +38,13 @@ namespace Emulation
 		CPUMemory* pMemory,
 		SIDProxy* pSIDProxy,
 		ASid* inASID,
+		USBSID* inUSBSID,
 		FlightRecorder* inFlightRecorder)
 		: m_CPU(inCPU)
 		, m_Memory(pMemory)
 		, m_SIDProxy(pSIDProxy)
 		, m_ASID(inASID)
+		, m_USBSID(inUSBSID)
 		, m_SIDRegisterFlightRecorder(inFlightRecorder)
 		, m_IsStarted(false)
 		, m_FeedCount(0)
@@ -550,14 +553,19 @@ namespace Emulation
 			m_SIDProxy->Write((unsigned char)(capture.m_usReg & 0xff), capture.m_ucVal);
 			nCycle += deltaCycles;
 
+			printf("[S] $%02X:%02X %u\n", (capture.m_usReg & 0xff), capture.m_ucVal, deltaCycles);
 			if(m_OutputDevice == ExecutionHandler::OutputDevice::ASID &&  m_ASID != nullptr)
 				m_ASID->WriteToSIDRegister(static_cast<unsigned char>(capture.m_usReg & 0xff), capture.m_ucVal);
+
+			// TODO: FINISH, SEGFAULTS
+			if(m_OutputDevice == ExecutionHandler::OutputDevice::USBSID && m_USBSID != nullptr)
+				m_USBSID->WriteToSIDRegister(static_cast<unsigned char>(capture.m_usReg & 0xff), capture.m_ucVal, deltaCycles);
 		}
 
 		// Do the rest of the frame
 		if(m_ASID != nullptr)
 			m_ASID->SendToDevice();
-		
+
 		while (nCycle < (int)m_CyclesPerFrame)
 		{
 			const int deltaCycles = m_CyclesPerFrame - nCycle;
