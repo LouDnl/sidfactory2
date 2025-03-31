@@ -88,7 +88,12 @@ namespace Editor
 
 		if (outputDevice != m_CachedOutputDevice || inNeedUpdate)
 		{
-			std::string output_device_string = (outputDevice == Emulation::ExecutionHandler::OutputDevice::ASID ? "ASID" : "RESID");
+			std::string output_device_string =
+				(outputDevice == Emulation::ExecutionHandler::OutputDevice::ASID
+					? "ASID"
+					: outputDevice == Emulation::ExecutionHandler::OutputDevice::USBSID
+					? "USBSID"
+					: "RESID");
 			m_TextSectionOutputDevice->SetText("Output: " + output_device_string);
 			m_CachedOutputDevice = outputDevice;
 			m_NeedRefresh = true;
