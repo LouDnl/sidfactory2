@@ -165,7 +165,7 @@ namespace Editor
 
 
 	bool ScreenIntro::TryStartDialogForMidiOutDeviceSelection()
-	{
+	{  // TODO: Add USBSID
 		std::vector<std::string> selections;
 
 		const auto MidiOutPorts = RtMidiUtils::RtMidiOut_GetPorts(m_RtMidiOut);
@@ -184,7 +184,7 @@ namespace Editor
 				60,
 				MidiOutPorts.size() + 3,
 				0,
-				"Select midi output device!",
+				"Select output device!",
 				selections,
 				[this, MidiOutPorts](const unsigned int inSelectionIndex)
 				{
