@@ -145,7 +145,7 @@ class RTMIDI_DLL_PUBLIC RtMidiError : public std::exception
  */
 typedef void (*RtMidiErrorCallback)( RtMidiError::Type type, const std::string &errorText, void *userData );
 
-class MidiApi;
+class RTMIDI_DLL_PUBLIC MidiApi;
 
 class RTMIDI_DLL_PUBLIC RtMidi
 {
