@@ -592,16 +592,19 @@ namespace Editor
 		}
 	}
 
-	void ScreenEdit::DoToggleOutputDevice() 
+	void ScreenEdit::DoToggleOutputDevice()
 	{
 		ExecutionHandler::OutputDevice device = m_ExecutionHandler->GetOutputDevice();
 
 		if (device == ExecutionHandler::OutputDevice::RESID) {
 			device = ExecutionHandler::OutputDevice::ASID;
 		}
-		else {
+		else if (device == ExecutionHandler::OutputDevice::ASID) {
+			device = ExecutionHandler::OutputDevice::USBSID;
+		} else {
 			device = ExecutionHandler::OutputDevice::RESID;
 		}
+
 		m_ExecutionHandler->SetOutputDevice(device);
 
 		if (device == ExecutionHandler::OutputDevice::ASID)
@@ -614,6 +617,10 @@ namespace Editor
 
 			m_ExecutionHandler->TellSIDWriteOrderInfo(SIDWriteInfoList);
 			m_ExecutionHandler->TellSIDEnvironment();
+		}
+		if (device == ExecutionHandler::OutputDevice::USBSID)
+		{
+			// TODO: IMPLEMENTATION!
 		}
 
 	}
@@ -1500,7 +1507,7 @@ namespace Editor
 
 				if(m_EditState.IsFollowPlayMode() && is_playing)
 					return;
-				
+
 				if(InHasFocus)
 				{
 					this->ShowSequenceUsageCount(InSequenceIndex);
@@ -2214,10 +2221,9 @@ namespace Editor
 
 			const int usage_count = sequence_index_use_count[inSequenceIndex];
 			const bool usage_count_plural = usage_count > 1;
-			
+
 			const std::string text = " Sequence " + EditorUtils::ConvertToHexValue(inSequenceIndex, m_DisplayState.IsHexUppercase()) + " referenced " + std::to_string(sequence_index_use_count[inSequenceIndex]) + (usage_count_plural ? " times." : " time.");
 			SetStatusBarMessage(text, 5000);
 		}
 	}
 }
-
