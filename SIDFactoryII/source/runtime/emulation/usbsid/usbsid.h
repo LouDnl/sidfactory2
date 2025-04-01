@@ -11,18 +11,19 @@ namespace Emulation
     USBSID();
 		// ASid(RtMidiOut* inRtMidiOut);
 
-		// bool isPortOpen();
-		// void SetMuted(bool inMuted);
+		bool isPortOpen(void);
+		void SetMuted(bool inMuted);
 
 		// void SendSIDRegisterWriteOrderAndCycleInfo(std::vector<Editor::SIDWriteInformation> inSIDWriteInfoList);
 		// void SendSIDType(bool is6581);
 		// void SendSIDEnvironment(bool isPAL);
+
 		void WriteToSIDRegister(unsigned char inSidReg, unsigned char inData, int cycles);
-		// void SendToDevice();
+		void FlushRemainingBuffer(void);
 
 	private:
     USBSID_NS::USBSID_Class &m_sid;
-    // USBSID_NS::USBSID_Class* m_sid = nullptr;
+
 		// void SendSetChannelsSilent();
 		// unsigned char GetASIDPositionFromRegisterIndex(unsigned char inSidRegister);
 

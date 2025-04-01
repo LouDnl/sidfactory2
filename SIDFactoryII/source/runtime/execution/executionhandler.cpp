@@ -153,16 +153,28 @@ namespace Emulation
 		if (m_OutputDevice == device)
 			return;
 
-		// if MIDI port is not open, do not switch to ASID
-		if (!m_ASID->isPortOpen())
+		// if MIDI port is not open, do not switch to ASID or if USBSID USB port is not initialized, do switch to USBSID
+		if(!m_ASID->isPortOpen() || !m_USBSID->isPortOpen())
 			return;
 
 		m_OutputDevice = device;
 
 		// mute/unmute ASID depending on its selection
-		m_ASID->SetMuted(m_OutputDevice != OutputDevice::ASID);
+		if (m_ASID->isPortOpen()) {
+			m_ASID->SetMuted(m_OutputDevice != OutputDevice::ASID);
+		} else
+		if (m_USBSID->isPortOpen()) {
+			m_USBSID->SetMuted(m_OutputDevice != OutputDevice::USBSID);
+		}
 
-		Utility::Logging::instance().Info("OutputDevice set to %s", m_OutputDevice == ExecutionHandler::OutputDevice::ASID ? "ASID" : "RESID");
+
+
+		Utility::Logging::instance().Info("OutputDevice set to %s",
+			m_OutputDevice == ExecutionHandler::OutputDevice::ASID
+			? "ASID"
+			: m_OutputDevice == ExecutionHandler::OutputDevice::USBSID
+			? "USBSID"
+			: "RESID");
 	}
 
 	const ExecutionHandler::OutputDevice ExecutionHandler::GetOutputDevice() const
@@ -553,18 +565,22 @@ namespace Emulation
 			m_SIDProxy->Write((unsigned char)(capture.m_usReg & 0xff), capture.m_ucVal);
 			nCycle += deltaCycles;
 
-			printf("[S] $%02X:%02X %u\n", (capture.m_usReg & 0xff), capture.m_ucVal, deltaCycles);
+			// printf("[S] $%02X:%02X %u\n", (capture.m_usReg & 0xff), capture.m_ucVal, deltaCycles);
 			if(m_OutputDevice == ExecutionHandler::OutputDevice::ASID &&  m_ASID != nullptr)
 				m_ASID->WriteToSIDRegister(static_cast<unsigned char>(capture.m_usReg & 0xff), capture.m_ucVal);
 
-			// TODO: FINISH, SEGFAULTS
+			// TODO: FINISH
 			if(m_OutputDevice == ExecutionHandler::OutputDevice::USBSID && m_USBSID != nullptr)
-				m_USBSID->WriteToSIDRegister(static_cast<unsigned char>(capture.m_usReg & 0xff), capture.m_ucVal, deltaCycles);
+				m_USBSID->WriteToSIDRegister(static_cast<unsigned char>(capture.m_usReg & 0xff),
+																		 capture.m_ucVal,
+																		 static_cast<unsigned short>(deltaCycles));
 		}
 
 		// Do the rest of the frame
 		if(m_ASID != nullptr)
 			m_ASID->SendToDevice();
+		if(m_USBSID != nullptr)
+			m_USBSID->FlushRemainingBuffer();
 
 		while (nCycle < (int)m_CyclesPerFrame)
 		{
