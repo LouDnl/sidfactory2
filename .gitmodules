@@ -1,0 +1,3 @@
+[submodule "SIDFactoryII/source/runtime/emulation/usbsid/driver"]
+	path = SIDFactoryII/source/runtime/emulation/usbsid/driver
+	url = https://github.com/LouDnl/USBSID-Pico-driver.git
