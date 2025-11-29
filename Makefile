@@ -23,6 +23,7 @@
 # Build artifacts are in /artifacts
 
 PLATFORM=LINUX
+LINUXAUDIO=ALSA
 
 APP_NAME=SIDFactoryII
 BUILD_NR= $(shell git show --no-patch --format='%cs').$(shell git rev-parse --short HEAD)
@@ -43,15 +44,19 @@ CC=g++
 CC_FLAGS=$(shell sdl2-config --cflags) -I$(SOURCE) -D_SF2_$(PLATFORM) -D_BUILD_NR=\"$(BUILD_NR)\" -std=gnu++14 -g
 LINKER_FLAGS=$(shell sdl2-config --libs) -lstdc++ -flto
 
-# ifeq ($(PLATFORM),LINUX)
-# 	CC_FLAGS := $(CC_FLAGS) -DUNIX_JACK
-# 	LINKER_FLAGS := $(LINKER_FLAGS) -ljack
-# endif
-# TODO: CREATE PKCONFIG SEARCH
-# -I/usr/local/include/libusb-1.0 -L/usr/local/lib -lusb-1.0
 ifeq ($(PLATFORM),LINUX)
-	CC_FLAGS := $(CC_FLAGS) -D__LINUX_ALSA__ -I/usr/local/include/libusb-1.0 -L/usr/local/lib
-	LINKER_FLAGS := $(LINKER_FLAGS) -lasound -L/usr/local/lib -lusb-1.0
+	CC_FLAGS := $(CC_FLAGS) $(shell pkg-config --cflags libusb-1.0)
+	LINKER_FLAGS := $(LINKER_FLAGS) $(shell pkg-config --libs libusb-1.0)
+
+	ifeq ($(LINUXAUDIO),JACK)
+		CC_FLAGS := $(CC_FLAGS) -D__UNIX_JACK__
+		LINKER_FLAGS := $(LINKER_FLAGS) -ljack
+	endif
+
+	ifeq ($(LINUXAUDIO),ALSA)
+		CC_FLAGS := $(CC_FLAGS) -D__LINUX_ALSA__
+		LINKER_FLAGS := $(LINKER_FLAGS) -lasound
+	endif
 endif
 
 ifeq ($(PLATFORM),MACOS)
