@@ -1,7 +1,7 @@
 #pragma once
 
 #include "runtime/editor/driver/driver_utils.h"
-#include "runtime/emulation/usbsid/driver/USBSID.h"
+#include "runtime/emulation/usbsid/driver/src/USBSID.h"
 
 namespace Emulation
 {

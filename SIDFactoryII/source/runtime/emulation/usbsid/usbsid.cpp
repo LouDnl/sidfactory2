@@ -17,7 +17,7 @@ namespace Emulation
 
   bool USBSID::isPortOpen(void)
   {
-    return m_sid.us_PortIsOpen;
+    return m_sid.USBSID_isOpen();
   }
 
   void USBSID::SetMuted(bool inMuted)
@@ -35,6 +35,6 @@ namespace Emulation
 
   void USBSID::FlushRemainingBuffer(void)
   {
-    m_sid.USBSID_Flush();
+    m_sid.USBSID_SetFlush();
   }
 }
